@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Divine Create - AI-Powered GitHub Assistant</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="announcement">✨ Welcome to Divine Create - Your AI-Powered Repository Assistant ✨</div>
+  
+  <div class="container">
+    <div class="topbar">
+      <div></div>
+      <div></div>
+    </div>
+
+    <div class="title-area">
+      <h1 class="site-title">
+        <span class="brand">Divine</span> Create
+      </h1>
+      <p class="tagline">AI-powered GitHub management at your fingertips</p>
+    </div>
+
+    <% if (!user) { %>
+      <div style="display: flex; justify-content: center; margin-top: 32px;">
+        <a href="/auth/github" class="auth-btn" style="
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          padding: 14px 32px;
+          background: linear-gradient(135deg, #ffd24a 12%, #a34bff 55%, #6d2bd6 100%);
+          color: #140b1f;
+          border-radius: 14px;
+          border: none;
+          font-weight: 1000;
+          cursor: pointer;
+          text-decoration: none;
+          box-shadow: 0 16px 46px rgba(0,0,0,0.55);
+          transition: all .16s ease;
+        ">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="currentColor">
+            <path d="M11 0C4.93 0 0 4.93 0 11c0 4.87 3.13 9.02 7.47 10.5.55.1.75-.24.75-.53v-1.85c-3.04.66-3.68-1.46-3.68-1.46-.5-1.27-1.22-1.61-1.22-1.61-.99-.68.08-.66.08-.66 1.1.08 1.68 1.13 1.68 1.13.98 1.67 2.56 1.19 3.18.91.1-.71.38-1.19.68-1.47-2.4-.27-4.92-1.2-4.92-5.33 0-1.18.42-2.14 1.12-2.89-.11-.27-.49-1.38.11-2.87 0 0 .91-.29 2.98 1.1.86-.24 1.79-.36 2.71-.36.92 0 1.85.12 2.71.36 2.07-1.39 2.97-1.1 2.97-1.1.6 1.49.22 2.6.11 2.87.7.75 1.12 1.71 1.12 2.89 0 4.14-2.53 5.06-4.94 5.33.39.34.73 1 .73 2.02v2.99c0 .29.2.63.76.53C18.87 20.02 22 15.87 22 11c0-6.07-4.93-11-11-11z"/>
+          </svg>
+          Sign in with GitHub
+        </a>
+      </div>
+    <% } else { %>
+      <div style="display: flex; justify-content: center; margin-top: 32px; gap: 12px;">
+        <a href="/dashboard" class="auth-btn" style="
+          display: inline-flex;
+          align-items: center;
+          padding: 14px 32px;
+          background: linear-gradient(135deg, #ffd24a 12%, #a34bff 55%, #6d2bd6 100%);
+          color: #140b1f;
+          border-radius: 14px;
+          border: none;
+          font-weight: 1000;
+          cursor: pointer;
+          text-decoration: none;
+          box-shadow: 0 16px 46px rgba(0,0,0,0.55);
+          transition: all .16s ease;
+        ">
+          Go to Dashboard
+        </a>
+        <a href="/auth/logout" class="auth-btn" style="
+          display: inline-flex;
+          align-items: center;
+          padding: 14px 32px;
+          background: rgba(255,215,0,0.10);
+          color: rgba(255,215,0,0.92);
+          border-radius: 14px;
+          border: 1px solid rgba(255,215,0,0.25);
+          font-weight: 1000;
+          cursor: pointer;
+          text-decoration: none;
+          box-shadow: 0 16px 46px rgba(0,0,0,0.55);
+          transition: all .16s ease;
+        ">
+          Logout
+        </a>
+      </div>
+    <% } %>
+
+    <div style="margin-top: 48px; text-align: center;">
+      <div style="
+        display: inline-block;
+        padding: 24px;
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.10);
+        background: rgba(0,0,0,0.22);
+        max-width: 600px;
+      ">
+        <h3 style="color: rgba(255,215,0,0.92); margin: 0 0 12px 0; font-weight: 1000;">Features</h3>
+        <ul style="color: var(--muted); font-weight: 900; text-align: left; line-height: 1.8;">
+          <li>✨ AI-powered repository management</li>
+          <li>📁 Full file tree editor</li>
+          <li>🤖 CreateAgent coding assistant</li>
+          <li>⚡ Multiple AI models (Flex 1, Agent 1, Flex 2)</li>
+          <li>🔐 Secure GitHub authentication</li>
+          <li>🎨 Beautiful divine aesthetic</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="site-footer">
+    <p class="disclaimer">Divine Create is an AI-powered assistant. Always review changes before approving.</p>
+  </div>
+</body>
+</html>
