@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editor - Divine Create</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .editor-wrapper {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 14px;
+      margin-top: 20px;
+      height: calc(100vh - 300px);
+      min-height: 400px;
+    }
+    .file-tree {
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 16px;
+      background: rgba(0,0,0,0.22);
+      overflow-y: auto;
+      padding: 14px;
+    }
+    .file-item {
+      padding: 8px 12px;
+      cursor: pointer;
+      border-radius: 10px;
+      font-weight: 900;
+      color: var(--muted);
+      transition: all .16s ease;
+      word-break: break-all;
+      font-size: 0.9rem;
+    }
+    .file-item:hover {
+      background: rgba(255,215,0,0.08);
+      color: rgba(255,215,0,0.92);
+    }
+    .file-item.active {
+      background: rgba(255,215,0,0.12);
+      color: rgba(255,215,0,0.92);
+      border-left: 3px solid rgba(255,215,0,0.92);
+      padding-left: 9px;
+    }
+    .editor-main {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .editor-header {
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.22);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .editor-header h2 {
+      margin: 0;
+      color: rgba(255,215,0,0.92);
+      font-weight: 1000;
+    }
+    .editor-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .editor-btn {
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.30);
+      color: rgba(255,215,0,0.92);
+      font-weight: 1000;
+      cursor: pointer;
+      transition: all .16s ease;
+      font-size: 0.9rem;
+    }
+    .editor-btn:hover {
+      background: rgba(255,215,0,0.10);
+      border-color: rgba(255,215,0,0.25);
+      transform: translateY(-1px);
+    }
+    textarea {
+      flex: 1;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.22);
+      color: #fff;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 0.9rem;
+      resize: none;
+      outline: none;
+    }
+    textarea:focus {
+      border-color: rgba(255,215,0,0.25);
+      box-shadow: 0 0 0 4px rgba(255,215,0,0.10);
+    }
+    @media (max-width: 860px) {
+      .editor-wrapper {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="announcement">Editing <strong><%= owner %>/<%= repo %></strong></div>
+  
+  <div class="container">
+    <div class="topbar">
+      <a href="/dashboard" style="display: flex; align-items: center; gap: 8px; color: rgba(255,215,0,0.92); text-decoration: none; font-weight: 1000;">
+        ← Back
+      </a>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <a href="/agent/<%= owner %>/<%= repo %>" class="icon-btn" title="Open CreateAgent">🤖</a>
+        <a href="/auth/logout" class="icon-btn">🚪</a>
+      </div>
+    </div>
+
+    <div class="title-area">
+      <h1 class="site-title"><%= repo %></h1>
+      <p class="tagline">File editor - Select a file to edit</p>
+    </div>
+
+    <div class="editor-wrapper">
+      <div class="file-tree" id="fileTree">
+        <div style="color: var(--muted); text-align: center; padding: 20px; font-weight: 900;">Loading files...</div>
+      </div>
+
+      <div class="editor-main">
+        <div class="editor-header">
+          <h2 id="fileName">Select a file</h2>
+          <div class="editor-actions">
+            <button class="editor-btn" onclick="saveFile()">💾 Save</button>
+            <button class="editor-btn" onclick="closeFile()">✕ Close</button>
+          </div>
+        </div>
+        <textarea id="editorContent" placeholder="File content will appear here..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="site-footer">
+    <p class="disclaimer">Always review your changes before saving to the repository.</p>
+  </div>
+
+  <script>
+    let currentFile = null;
+    let currentSha = null;
+
+    async function loadFileTree() {
+      try {
+        const response = await fetch(`/api/tree/<%= owner %>/<%= repo %>`);
+        const files = await response.json();
+        const tree = document.getElementById('fileTree');
+        tree.innerHTML = '';
+
+        files.forEach(file => {
+          if (file.type === 'blob') {
+            const item = document.createElement('div');
+            item.className = 'file-item';
+            item.textContent = file.path;
+            item.onclick = () => openFile(file.path);
+            tree.appendChild(item);
+          }
+        });
+      } catch (error) {
+        document.getElementById('fileTree').innerHTML = '<div style="color: #ff3b3b; padding: 20px; font-weight: 900;">Error loading files</div>';
+      }
+    }
+
+    async function openFile(filePath) {
+      try {
+        const response = await fetch(`/api/file/<%= owner %>/<%= repo %>/${filePath}`);
+        const data = await response.json();
+
+        currentFile = filePath;
+        currentSha = data.sha;
+
+        document.getElementById('fileName').textContent = filePath;
+        document.getElementById('editorContent').value = data.content;
+
+        document.querySelectorAll('.file-item').forEach(item => item.classList.remove('active'));
+        event.target.classList.add('active');
+      } catch (error) {
+        alert('Error loading file');
+      }
+    }
+
+    async function saveFile() {
+      if (!currentFile) {
+        alert('No file selected');
+        return;
+      }
+
+      const content = document.getElementById('editorContent').value;
+      try {
+        await fetch(`/api/file/<%= owner %>/<%= repo %>/${currentFile}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            content,
+            message: `Update ${currentFile} via Divine Create`,
+          }),
+        });
+        alert('File saved successfully!');
+      } catch (error) {
+        alert('Error saving file');
+      }
+    }
+
+    function closeFile() {
+      currentFile = null;
+      currentSha = null;
+      document.getElementById('fileName').textContent = 'Select a file';
+      document.getElementById('editorContent').value = '';
+      document.querySelectorAll('.file-item').forEach(item => item.classList.remove('active'));
+    }
+
+    loadFileTree();
+  </script>
+</body>
+</html>
