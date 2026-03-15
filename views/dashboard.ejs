@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Divine Create</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .repo-card {
+      padding: 18px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.22);
+      transition: all .16s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .repo-card:hover {
+      background: rgba(0,0,0,0.30);
+      border-color: rgba(255,215,0,0.25);
+    }
+    .repo-info {
+      flex: 1;
+    }
+    .repo-name {
+      color: rgba(255,215,0,0.92);
+      font-weight: 1000;
+      margin: 0;
+      font-size: 1.1rem;
+    }
+    .repo-desc {
+      color: var(--muted);
+      font-weight: 900;
+      margin: 4px 0 0;
+      font-size: 0.95rem;
+    }
+    .repo-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .repo-btn {
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.30);
+      color: rgba(255,215,0,0.92);
+      font-weight: 1000;
+      cursor: pointer;
+      transition: all .16s ease;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+    }
+    .repo-btn:hover {
+      background: rgba(255,215,0,0.10);
+      border-color: rgba(255,215,0,0.25);
+      transform: translateY(-1px);
+    }
+    .repos-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .loading {
+      text-align: center;
+      color: var(--muted);
+      padding: 40px;
+      font-weight: 900;
+    }
+  </style>
+</head>
+<body>
+  <div class="announcement">Welcome, <%= user.username %> 👋 - Select a repository to get started</div>
+  
+  <div class="container">
+    <div class="topbar">
+      <a href="/" style="display: flex; align-items: center; gap: 8px; color: rgba(255,215,0,0.92); text-decoration: none; font-weight: 1000;">
+        ← Back
+      </a>
+      <a href="/auth/logout" class="icon-btn" style="width: 44px; height: 44px;">
+        🚪
+      </a>
+    </div>
+
+    <div class="title-area">
+      <h1 class="site-title">Your Repositories</h1>
+      <p class="tagline">Select one to edit with CreateAgent</p>
+    </div>
+
+    <div class="repos-list" id="reposList">
+      <div class="loading">Loading repositories...</div>
+    </div>
+  </div>
+
+  <div class="site-footer">
+    <p class="disclaimer">Manage your GitHub repositories directly from Divine Create</p>
+  </div>
+
+  <script>
+    async function loadRepos() {
+      try {
+        const response = await fetch('/api/repos');
+        const repos = await response.json();
+        const container = document.getElementById('reposList');
+        container.innerHTML = '';
+
+        repos.forEach(repo => {
+          const card = document.createElement('div');
+          card.className = 'repo-card';
+          card.innerHTML = `
+            <div class="repo-info">
+              <p class="repo-name">${repo.name}</p>
+              <p class="repo-desc">${repo.description || 'No description'}</p>
+            </div>
+            <div class="repo-actions">
+              <a href="/editor/${repo.owner.login}/${repo.name}" class="repo-btn">📝 Edit</a>
+              <a href="/agent/${repo.owner.login}/${repo.name}" class="repo-btn">🤖 Agent</a>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      } catch (error) {
+        document.getElementById('reposList').innerHTML = '<div class="loading">Error loading repositories</div>';
+      }
+    }
+
+    loadRepos();
+  </script>
+</body>
+</html>
